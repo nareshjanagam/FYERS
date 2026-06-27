@@ -6,12 +6,12 @@ from urllib import parse
 import sys
 
 # This script will only work if TOTP is enabled. 
-# You can enable TOTP using this link: https://myaccount.fyers.in/ManageAccount >> External 2FA TOTP >> click on "Enable".
+# You can enable TOTP using this link: https://fyers.in/web/profile/others >> External 2FA TOTP >> click on "Enable".
 
 # Client Information (ENTER YOUR OWN INFO HERE! Data varies from users and app types)
 CLIENT_ID = "XRXXXX9"       # Your Fyers Client ID
 PIN = "1234"                # User pin for Fyers account
-APP_ID = "YIXXXXXSE"        # App ID from MyAPI dashboard (https://myapi.fyers.in/dashboard). The format is appId-appType. 
+APP_ID = "YIXXXXXSE"        # App ID from MyAPI dashboard (https://fyers.in/web/api-dashboard/user-apps). The format is appId-appType. 
 # Example: YIXXXXXSE-100. In this code, YIXXXXXSE is the APP_ID and 100 is the APP_TYPE
 APP_TYPE = "100"
 APP_SECRET = "E4WXXXX06I"   # App Secret from myapi dashboard (https://myapi.fyers.in/dashboard)
