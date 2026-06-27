@@ -6,27 +6,18 @@ from urllib import parse
 import sys
 
 # This script will only work if TOTP is enabled. 
-# You can enable TOTP using this link: https://myaccount.fyers.in/ManageAccount >> External 2FA TOTP >> click on "Enable".
+# You can enable TOTP using this link: https://fyers.in/web/profile/others >> External 2FA TOTP >> click on "Enable".
 
-# 
+# Client Information (ENTER YOUR OWN INFO HERE! Data varies from users and app types)
+CLIENT_ID = "XRXXXX9"       # Your Fyers Client ID
+PIN = "1234"                # User pin for Fyers account
+APP_ID = "YIXXXXXSE"        # App ID from MyAPI dashboard (https://fyers.in/web/api-dashboard/user-apps). The format is appId-appType. 
+# Example: YIXXXXXSE-100. In this code, YIXXXXXSE is the APP_ID and 100 is the APP_TYPE
+APP_TYPE = "100"
+APP_SECRET = "E4WXXXX06I"   # App Secret from myapi dashboard (https://myapi.fyers.in/dashboard)
+TOTP_SECRET_KEY = "RT276XFG7XXXXXXXXXXX7CGO25CVRO"  # TOTP secret key, copy the secret while enabling TOTP.
 
-# Reading credentials from the file
-credentials = {}
-with open('api_profile_details.txt', 'r') as file:
-    for line in file:
-        key, value = line.strip().split('=')
-        credentials[key] = value
-
-# Assigning values to variables
-CLIENT_ID = credentials['CLIENT_ID']
-PIN = credentials['PIN']
-APP_ID = credentials['APP_ID']
-APP_TYPE = credentials['APP_TYPE']
-APP_SECRET = credentials['APP_SECRET']
-TOTP_SECRET_KEY = credentials['TOTP_SECRET_KEY']
-REDIRECT_URI = credentials['REDIRECT_URI']
-
-# Now you can use these variables in your code
+REDIRECT_URI = "https://trade.fyers.in/api-login/redirect-uri/index.html"  # Redirect URL from the app
 
 # NOTE: Do not share these secrets with anyone.
 
@@ -59,16 +50,16 @@ def verify_client_id(client_id):
         request_key = result["request_key"]
 
         return [SUCCESS, request_key]
-
+    
     except Exception as e:
         return [ERROR, e]
-
+    
 
 def generate_totp(secret):
     try:
         generated_totp = pyotp.TOTP(secret).now()
         return [SUCCESS, generated_totp]
-
+    
     except Exception as e:
         return [ERROR, e]
 
@@ -88,7 +79,7 @@ def verify_totp(request_key, totp):
         request_key = result["request_key"]
 
         return [SUCCESS, request_key]
-
+    
     except Exception as e:
         return [ERROR, e]
 
@@ -104,12 +95,12 @@ def verify_PIN(request_key, pin):
         result_string = requests.post(url=URL_VERIFY_PIN, json=payload)
         if result_string.status_code != 200:
             return [ERROR, result_string.text]
-
+    
         result = json.loads(result_string.text)
         access_token = result["data"]["access_token"]
 
         return [SUCCESS, access_token]
-
+    
     except Exception as e:
         return [ERROR, e]
 
@@ -142,7 +133,7 @@ def token(client_id, app_id, redirect_uri, app_type, access_token):
         auth_code = parse.parse_qs(parse.urlparse(url).query)['auth_code'][0]
 
         return [SUCCESS, auth_code]
-
+    
     except Exception as e:
         return [ERROR, e]
 
@@ -171,7 +162,7 @@ def validate_authcode(auth_code):
         access_token = result["access_token"]
 
         return [SUCCESS, access_token]
-
+    
     except Exception as e:
         return [ERROR, e]
 
@@ -202,7 +193,7 @@ def main():
         sys.exit()
     else:
         print("verify_totp_result success")
-
+    
     # Step 4 - Verify pin and send back access token
     request_key_2 = verify_totp_result[1]
     verify_pin_result = verify_PIN(request_key=request_key_2, pin=PIN)
@@ -211,7 +202,7 @@ def main():
         sys.exit()
     else:
         print("verify_pin_result success")
-
+    
     # Step 5 - Get auth code for API V3 App from trade access token
     token_result = token(
         client_id=CLIENT_ID, app_id=APP_ID, redirect_uri=REDIRECT_URI, app_type=APP_TYPE,
@@ -231,18 +222,10 @@ def main():
         sys.exit()
     else:
         print("validate_authcode success")
-
+    
     access_token = APP_ID + "-" + APP_TYPE + ":" + validate_authcode_result[1]
-    api_token = validate_authcode_result[1]
-    with open('api_token.txt', 'w') as file:
-        file.write(api_token)
-
-    with open('access_token.txt', 'w') as file:
-        file.write(access_token)
-
 
     print(f"\naccess_token - {access_token}\n")
-    # print(f"\nsocket_token - {socket_token}\n")
 
 if __name__ == "__main__":
     main()
