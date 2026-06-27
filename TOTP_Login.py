@@ -8,25 +8,16 @@ import sys
 # This script will only work if TOTP is enabled. 
 # You can enable TOTP using this link: https://myaccount.fyers.in/ManageAccount >> External 2FA TOTP >> click on "Enable".
 
-# 
+# Client Information (ENTER YOUR OWN INFO HERE! Data varies from users and app types)
+CLIENT_ID = "XRXXXX9"       # Your Fyers Client ID
+PIN = "1234"                # User pin for Fyers account
+APP_ID = "YIXXXXXSE"        # App ID from MyAPI dashboard (https://myapi.fyers.in/dashboard). The format is appId-appType. 
+# Example: YIXXXXXSE-100. In this code, YIXXXXXSE is the APP_ID and 100 is the APP_TYPE
+APP_TYPE = "100"
+APP_SECRET = "E4WXXXX06I"   # App Secret from myapi dashboard (https://myapi.fyers.in/dashboard)
+TOTP_SECRET_KEY = "RT276XFG7XXXXXXXXXXX7CGO25CVRO"  # TOTP secret key, copy the secret while enabling TOTP.
 
-# Reading credentials from the file
-credentials = {}
-with open('api_profile_details.txt', 'r') as file:
-    for line in file:
-        key, value = line.strip().split('=')
-        credentials[key] = value
-
-# Assigning values to variables
-CLIENT_ID = credentials['CLIENT_ID']
-PIN = credentials['PIN']
-APP_ID = credentials['APP_ID']
-APP_TYPE = credentials['APP_TYPE']
-APP_SECRET = credentials['APP_SECRET']
-TOTP_SECRET_KEY = credentials['TOTP_SECRET_KEY']
-REDIRECT_URI = credentials['REDIRECT_URI']
-
-# Now you can use these variables in your code
+REDIRECT_URI = "https://trade.fyers.in/api-login/redirect-uri/index.html"  # Redirect URL from the app
 
 # NOTE: Do not share these secrets with anyone.
 
@@ -233,16 +224,8 @@ def main():
         print("validate_authcode success")
     
     access_token = APP_ID + "-" + APP_TYPE + ":" + validate_authcode_result[1]
-    api_token = validate_authcode_result[1]
-    with open('api_token.txt', 'w') as file:
-        file.write(api_token)
-
-    with open('access_token.txt', 'w') as file:
-        file.write(access_token)
-
 
     print(f"\naccess_token - {access_token}\n")
-    # print(f"\nsocket_token - {socket_token}\n")
 
 if __name__ == "__main__":
     main()
